@@ -29,73 +29,77 @@ app.get("/", (req, res) => {
 
 // -------- Park Vehicle --------
 app.post("/park", async (req, res) => {
-    try {
-        const { vehicle_number } = req.body;
-
-        console.log("API HIT"); // 👈 check if API runs
-
-        let freeSlot = "A1"; // temp test
-
-        const data = await Vehicle.create({
-            vehicle_number,
-            slot: freeSlot
-        });
-
-        console.log("Saved to DB:", data); // 👈 check save
-
-        res.json({ message: "Saved", data });
-
-    } catch (err) {
-        console.log("ERROR:", err); // 👈 VERY IMPORTANT
-        res.json({ message: "Error", err });
-    }
-});
-
-// -------- Exit Vehicle --------
-app.post("/exit", async (req, res) => {
     const { vehicle_number } = req.body;
 
     if (!vehicle_number) {
         return res.json({ message: "Enter vehicle number" });
     }
 
-    let vehicle = await Vehicle.findOne({ vehicle_number });
+    // check if already parked
+    const existing = await Vehicle.findOne({ vehicle_number });
+    if (existing) {
+        return res.json({ message: "Vehicle already parked" });
+    }
+
+    // get all occupied slots from DB
+    const vehicles = await Vehicle.find();
+    const occupied = vehicles.map(v => v.slot);
+
+    // find free slot
+    let freeSlotObj = initialSlots.find(
+        s => !occupied.includes(s.slot)
+    );
+
+    if (!freeSlotObj) {
+        return res.json({ message: "Parking Full" });
+    }
+
+    // save to DB
+    const newVehicle = new Vehicle({
+        vehicle_number,
+        slot: freeSlotObj.slot
+    });
+
+    await newVehicle.save();
+
+    res.json({
+        message: "Parking Successful",
+        vehicle: vehicle_number,
+        slot: freeSlotObj.slot
+    });
+}););
+
+// -------- Exit Vehicle --------
+app.post("/exit", async (req, res) => {
+    const { vehicle_number } = req.body;
+
+    const vehicle = await Vehicle.findOne({ vehicle_number });
 
     if (!vehicle) {
         return res.json({ message: "Vehicle not found" });
     }
 
-    let slot = vehicle.slot;
-
-    // ✅ DELETE FROM DB
     await Vehicle.deleteOne({ vehicle_number });
 
     res.json({
         message: "Exit Successful",
-        slot_freed: slot
+        slot_freed: vehicle.slot
     });
 });
 
 // -------- Status --------
 app.get("/status", async (req, res) => {
+    const vehicles = await Vehicle.find();
 
-    let allVehicles = await Vehicle.find();
+    let occupiedSlots = vehicles.map(v => v.slot);
 
-    let occupiedSlots = allVehicles.map(v => v.slot);
-
-    let freeSlots = initialSlots.filter(
-        slot => !occupiedSlots.includes(slot)
-    );
-
-    // convert to map for UI
-    let vehicleMap = {};
-    allVehicles.forEach(v => {
-        vehicleMap[v.vehicle_number] = v.slot;
-    });
+    let freeSlots = initialSlots
+        .map(s => s.slot)
+        .filter(slot => !occupiedSlots.includes(slot));
 
     res.json({
         available_slots: freeSlots,
-        occupied_slots: vehicleMap,
+        occupied_slots: vehicles,
         total_available: freeSlots.length,
         total_occupied: occupiedSlots.length
     });
