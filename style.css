@@ -1,0 +1,114 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #e3f2fd, #f5f7fa);
+    text-align: center;
+    margin: 0;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-top: 20px;
+}
+
+.box {
+    background: #ffffff;
+    width: 320px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.box:hover {
+    transform: scale(1.03);
+}
+
+input {
+    width: 85%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #3498db;
+}
+
+button {
+    width: 90%;
+    padding: 10px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #02263e;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #2c3e50;
+}
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.slot {
+    width: 90px;
+    height: 90px;
+    margin: 10px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+/* Colors */
+.free {
+    background-color: #2ecc71;
+}
+
+.occupied {
+    background-color: #e74c3c;
+}
+
+/* Animation */
+.slot.changed {
+    transform: scale(1.2);
+}
+
+/* Vehicle text */
+.vehicle {
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+/* History */
+#history {
+    list-style: none;
+    padding: 0;
+}
+
+#history li {
+    background: #fff;
+    margin: 5px auto;
+    padding: 8px;
+    width: 250px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}

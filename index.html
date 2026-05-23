@@ -1,0 +1,47 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>ParkNexus</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>🚗 ParkNexus</h1>
+
+    <!-- Vehicle Entry -->
+    <div class="box">
+        <h3>Vehicle Entry</h3>
+        <input type="text" id="entry" placeholder="Enter Vehicle Number">
+        <button onclick="park()">Park Vehicle</button>
+    </div>
+
+    <!-- Vehicle Exit -->
+    <div class="box">
+        <h3>Vehicle Exit</h3>
+        <input type="text" id="exit" placeholder="Enter Vehicle Number">
+        <button onclick="exitVehicle()">Exit Vehicle</button>
+    </div>
+
+    <!-- Status -->
+    <div class="box">
+        <h3>Parking Status</h3>
+        <button onclick="status()">Check Parking Status</button>
+    </div>
+
+    <!-- Result Summary -->
+    <div id="result"></div>
+
+    <!-- Parking Grid -->
+    <h2>🚗 Parking Slots</h2>
+    <div id="parkingGrid" class="grid"></div>
+
+    <!-- Parking History -->
+    <h2>📜 Parking History</h2>
+    <ul id="history"></ul>
+
+   
+    <script src="script.js"></script>
+
+</body>
+</html>
