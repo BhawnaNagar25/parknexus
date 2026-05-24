@@ -195,7 +195,9 @@ app.get("/status", async (req, res) => {
             };
         });
 
-        const freeDetailed = slots.filter(s => !occupiedSlotIds.includes(s.slot));
+        const freeDetailed = slots
+            .filter(s => !occupiedSlotIds.includes(s.slot))
+            .map(s => ({ slot: s.slot, distance: s.distance }));
 
         res.json({
             occupied_slots: occupiedDetailed,
@@ -209,7 +211,6 @@ app.get("/status", async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 });
-
 // ─── RESET (protected by secret key) ──────────────────────────────────────────
 
 app.post("/reset", async (req, res) => {
