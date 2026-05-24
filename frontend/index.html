@@ -1,49 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParkNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <h1>🚗 ParkNexus</h1>
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">P</div>
+                <div class="logo-text">
+                    <span class="logo-title">ParkNexus</span>
+                    <span class="logo-sub">Smart Parking System</span>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-chip">
+                    <span class="stat-dot free-dot"></span>
+                    <span id="freeCount">—</span> Free
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-dot occ-dot"></span>
+                    <span id="occCount">—</span> Occupied
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <!-- Vehicle Entry -->
-    <div class="box">
-        <h3>Vehicle Entry</h3>
-        <input type="text" id="entry" placeholder="Enter Vehicle Number">
-        <button id="parkBtn" onclick="park()">Park Vehicle</button>
-    </div>
+    <main>
 
-    <!-- Vehicle Exit -->
-    <div class="box">
-        <h3>Vehicle Exit</h3>
-        <input type="text" id="exit" placeholder="Enter Vehicle Number">
-        <button id="exitBtn" onclick="exitVehicle()">Exit Vehicle</button>
-    </div>
+        <section class="actions">
+            <div class="card">
+                <div class="card-icon">↓</div>
+                <h3>Vehicle Entry</h3>
+                <p class="card-desc">Allocate nearest available slot using MinHeap</p>
+                <div class="input-wrap">
+                    <input type="text" id="entryInput" placeholder="e.g. MH12AB1234" maxlength="15" autocomplete="off">
+                    <label>Vehicle Number</label>
+                </div>
+                <button class="btn btn-primary" id="parkBtn" onclick="park()">
+                    <span class="btn-text">Park Vehicle</span>
+                    <span class="btn-icon">→</span>
+                </button>
+                <div class="card-result" id="entryResult"></div>
+            </div>
 
-    <!-- Status -->
-    <div class="box">
-        <h3>Parking Status</h3>
-        <button onclick="status()">Check Parking Status</button>
-    </div>
+            <div class="card" id="exitCard">
+                <div class="card-icon">↑</div>
+                <h3>Vehicle Exit</h3>
+                <p class="card-desc">Free the slot and update parking grid</p>
+                <div class="input-wrap">
+                    <input type="text" id="exitInput" placeholder="e.g. MH12AB1234" maxlength="15" autocomplete="off">
+                    <label>Vehicle Number</label>
+                </div>
+                <button class="btn btn-danger" id="exitBtn" onclick="exitVehicle()">
+                    <span class="btn-text">Exit Vehicle</span>
+                    <span class="btn-icon">→</span>
+                </button>
+                <div class="card-result" id="exitResult"></div>
+            </div>
+        </section>
 
-    <!-- Result Message -->
-    <div id="actionResult"></div>
+        <section class="grid-section">
+            <div class="section-header">
+                <h2>Parking Slots</h2>
+                <button class="refresh-btn" onclick="loadStatus()">
+                    <span id="refreshIcon">↺</span>
+                </button>
+            </div>
+            <div class="slot-grid" id="parkingGrid"></div>
+        </section>
 
-    <!-- Summary -->
-    <div id="result"></div>
+        <section class="history-section">
+            <div class="section-header">
+                <h2>Activity Log</h2>
+                <button class="clear-btn" onclick="clearHistory()">Clear</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="history-empty">No activity yet</div>
+            </div>
+        </section>
 
-    <!-- Parking Grid -->
-    <h2>🚗 Parking Slots</h2>
-    <div id="parkingGrid" class="grid"></div>
+    </main>
 
-    <!-- Parking History -->
-    <h2>📜 Parking History</h2>
-    <ul id="history"></ul>
+    <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
