@@ -145,8 +145,9 @@ function loadStatus() {
         renderHistory();
     })
     .catch(() => {
-        showToast("❌ Could not fetch status");
-    })
+    showToast("⏳ Backend waking up, retrying...");
+    setTimeout(loadStatus, 5000);
+})
     .finally(() => {
         if (refreshBtn) refreshBtn.classList.remove("spinning");
     });
