@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>ParkNexus</title>
@@ -13,14 +13,14 @@
     <div class="box">
         <h3>Vehicle Entry</h3>
         <input type="text" id="entry" placeholder="Enter Vehicle Number">
-        <button onclick="park()">Park Vehicle</button>
+        <button id="parkBtn" onclick="park()">Park Vehicle</button>
     </div>
 
     <!-- Vehicle Exit -->
     <div class="box">
         <h3>Vehicle Exit</h3>
         <input type="text" id="exit" placeholder="Enter Vehicle Number">
-        <button onclick="exitVehicle()">Exit Vehicle</button>
+        <button id="exitBtn" onclick="exitVehicle()">Exit Vehicle</button>
     </div>
 
     <!-- Status -->
@@ -29,7 +29,10 @@
         <button onclick="status()">Check Parking Status</button>
     </div>
 
-    <!-- Result Summary -->
+    <!-- Result Message -->
+    <div id="actionResult"></div>
+
+    <!-- Summary -->
     <div id="result"></div>
 
     <!-- Parking Grid -->
@@ -40,7 +43,6 @@
     <h2>📜 Parking History</h2>
     <ul id="history"></ul>
 
-   
     <script src="script.js"></script>
 
 </body>

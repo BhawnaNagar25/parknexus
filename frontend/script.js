@@ -1,18 +1,39 @@
 const API = "https://parknexus-backend.onrender.com";
 
-let historyList = [];
+// Persisted history using localStorage
+let historyList = JSON.parse(localStorage.getItem("parkHistory") || "[]");
 
-// 🚗 Park Vehicle
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+function setActionResult(msg) {
+    const el = document.getElementById("actionResult");
+    if (el) el.innerHTML = msg;
+}
+
+function setStatusResult(msg) {
+    const el = document.getElementById("result");
+    if (el) el.innerHTML = msg;
+}
+
+function saveHistory() {
+    localStorage.setItem("parkHistory", JSON.stringify(historyList));
+}
+
+// ─── Park Vehicle ──────────────────────────────────────────────────────────────
+
 function park() {
-    let input = document.getElementById("entry");
-    if (!input) return;
+    const input = document.getElementById("entry");
+    const btn = document.getElementById("parkBtn");
+    if (!input || !btn) return;
 
-    let vehicle = input.value.trim();
+    const vehicle = input.value.trim().toUpperCase();
 
     if (!vehicle) {
         alert("Enter vehicle number");
         return;
     }
+
+    btn.disabled = true;
 
     fetch(API + "/park", {
         method: "POST",
@@ -21,28 +42,43 @@ function park() {
     })
     .then(res => res.json())
     .then(data => {
-        let result = document.getElementById("result");
-        if (result) {
-            result.innerHTML = data.message + (data.slot ? " → " + data.slot : "");
+        const msg = data.message + (data.slot ? " → Slot: " + data.slot : "");
+        setActionResult("🚗 " + msg);
+
+        // Add to history only on success
+        if (data.slot) {
+            const entry = { vehicle, slot: data.slot, time: new Date().toLocaleTimeString(), action: "Parked" };
+            historyList.unshift(entry);
+            saveHistory();
         }
 
         input.value = "";
-        status(); // refresh UI
+        status();
     })
-    .catch(err => console.log("Error:", err));
+    .catch(err => {
+        console.log("Error:", err);
+        setActionResult("❌ Could not connect to server.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+    });
 }
 
-// 🚪 Exit Vehicle
-function exitVehicle() {
-    let input = document.getElementById("exit");
-    if (!input) return;
+// ─── Exit Vehicle ──────────────────────────────────────────────────────────────
 
-    let vehicle = input.value.trim();
+function exitVehicle() {
+    const input = document.getElementById("exit");
+    const btn = document.getElementById("exitBtn");
+    if (!input || !btn) return;
+
+    const vehicle = input.value.trim().toUpperCase();
 
     if (!vehicle) {
         alert("Enter vehicle number");
         return;
     }
+
+    btn.disabled = true;
 
     fetch(API + "/exit", {
         method: "POST",
@@ -51,99 +87,111 @@ function exitVehicle() {
     })
     .then(res => res.json())
     .then(data => {
-        let result = document.getElementById("result");
-        if (result) {
-            result.innerHTML =
-                data.message +
-                (data.slot_freed ? " → Freed: " + data.slot_freed : "");
+        const msg = data.message + (data.slot_freed ? " → Freed: " + data.slot_freed : "");
+        setActionResult("🏁 " + msg);
+
+        // Add to history only on success
+        if (data.slot_freed) {
+            const entry = { vehicle, slot: data.slot_freed, time: new Date().toLocaleTimeString(), action: "Exited" };
+            historyList.unshift(entry);
+            saveHistory();
         }
 
         input.value = "";
-        status(); // refresh UI
+        status();
     })
-    .catch(err => console.log("Error:", err));
+    .catch(err => {
+        console.log("Error:", err);
+        setActionResult("❌ Could not connect to server.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+    });
 }
 
-// 📊 Parking Status
+// ─── Parking Status ────────────────────────────────────────────────────────────
+
 function status() {
     fetch(API + "/status")
     .then(res => res.json())
     .then(data => {
 
-        // 🔹 Summary
-        let result = document.getElementById("result");
-        if (result) {
-            result.innerHTML =
-                "<b>Free:</b> " + data.total_available +
-                " | <b>Occupied:</b> " + data.total_occupied;
-        }
+        // Summary — separate div from action messages
+        setStatusResult(
+            "<b>Free:</b> " + data.total_available +
+            " | <b>Occupied:</b> " + data.total_occupied
+        );
 
-        const allSlots = ["A1", "A2", "A3", "B1", "B2"];
+        // Build slot list from backend response (not hardcoded)
+        const allSlots = [
+            ...( data.available_slots || []).map(s => s.slot),
+            ...(data.occupied_slots || []).map(s => s.slot)
+        ].sort();
 
-        let grid = document.getElementById("parkingGrid");
+        const grid = document.getElementById("parkingGrid");
         if (!grid) return;
 
         grid.innerHTML = "";
 
-        allSlots.forEach(slot => {
-            let div = document.createElement("div");
+        allSlots.forEach(slotId => {
+            const div = document.createElement("div");
             div.className = "slot";
 
-            let vehicle = null;
+            const vehicleObj = (data.occupied_slots || []).find(v => v.slot === slotId);
 
-            // 🔍 Safe loop
-            let occupied = data.occupied_slots || {};
-
-            for (let v in occupied) {
-                if (occupied[v] === slot) {
-                    vehicle = v;
-                    break;
-                }
-            }
-
-            if (vehicle) {
-                // 🔴 Occupied
+            if (vehicleObj) {
                 div.classList.add("occupied");
                 div.innerHTML = `
-                    <div>${slot}</div>
-                    <div class="vehicle">${vehicle}</div>
+                    <div>${slotId}</div>
+                    <div class="vehicle">${vehicleObj.vehicle_number}</div>
                 `;
-
-                // 📜 History
-                if (!historyList.includes(vehicle)) {
-                    historyList.push(vehicle);
-                }
-
             } else {
-                // 🟢 Free
                 div.classList.add("free");
-                div.innerHTML = `<div>${slot}</div>`;
+                div.innerHTML = `<div>${slotId}</div><div class="vehicle">Free</div>`;
             }
 
-            // ✨ Animation
+            // Animate slot change
             div.classList.add("changed");
-            setTimeout(() => div.classList.remove("changed"), 300);
+            setTimeout(() => div.classList.remove("changed"), 400);
 
             grid.appendChild(div);
         });
 
-        // 📜 History UI
-        let historyUI = document.getElementById("history");
-        if (historyUI) {
-            historyUI.innerHTML = "";
-
-            historyList.slice().reverse().forEach(v => {
-                let li = document.createElement("li");
-                li.innerText = "🚗 " + v;
-                historyUI.appendChild(li);
-            });
-        }
-
+        // Render history from localStorage
+        renderHistory();
     })
-    .catch(err => console.log("Error:", err));
+    .catch(err => {
+        console.log("Error:", err);
+        setStatusResult("❌ Could not fetch status.");
+    });
 }
 
-// 🔥 Load on page start
+// ─── Render History ────────────────────────────────────────────────────────────
+
+function renderHistory() {
+    const historyUI = document.getElementById("history");
+    if (!historyUI) return;
+
+    historyUI.innerHTML = "";
+
+    if (historyList.length === 0) {
+        const li = document.createElement("li");
+        li.innerText = "No history yet.";
+        historyUI.appendChild(li);
+        return;
+    }
+
+    historyList.forEach(entry => {
+        const li = document.createElement("li");
+        const icon = entry.action === "Parked" ? "🚗" : "🏁";
+        li.innerText = `${icon} ${entry.action}: ${entry.vehicle} | Slot: ${entry.slot} | ${entry.time}`;
+        historyUI.appendChild(li);
+    });
+}
+
+// ─── Load on start ─────────────────────────────────────────────────────────────
+
 window.onload = () => {
     status();
+    renderHistory();
 };
