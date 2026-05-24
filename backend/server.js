@@ -6,7 +6,10 @@ const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST"]
+}));
 
 // ✅ MongoDB — credentials in .env
 mongoose.connect(process.env.MONGO_URI)
