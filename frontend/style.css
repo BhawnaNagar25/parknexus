@@ -296,3 +296,227 @@ main {
     display: flex;
     align-items: center;
 }
+.refresh-btn:hover {
+    background: var(--gray-100);
+}
+
+.refresh-btn.spinning span {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ─── PARKING GRID ─── */
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.slot-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 140px;
+}
+
+.slot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.slot-card.free {
+    border-left: 5px solid var(--green);
+}
+
+.slot-card.occupied {
+    border-left: 5px solid var(--red);
+}
+
+.slot-car-icon {
+    font-size: 24px;
+}
+
+.slot-id {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.slot-status {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.slot-distance {
+    font-size: 12px;
+    color: var(--gray-400);
+}
+
+.slot-vehicle {
+    margin-top: auto;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    background: var(--gray-100);
+    padding: 6px 8px;
+    border-radius: 8px;
+    word-break: break-word;
+}
+
+/* ─── HISTORY ─── */
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-item {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-sm);
+}
+
+.history-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.history-badge.parked {
+    background: var(--green-bg);
+}
+
+.history-badge.exited {
+    background: var(--red-bg);
+}
+
+.history-info {
+    flex: 1;
+}
+
+.history-plate {
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+}
+
+.history-meta {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 2px;
+}
+
+.history-time {
+    font-size: 12px;
+    color: var(--gray-400);
+}
+
+.history-empty {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray-400);
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px dashed var(--gray-200);
+}
+
+/* ─── TOAST ─── */
+
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ─── CLEAR BUTTON ─── */
+
+.clear-btn {
+    border: none;
+    background: var(--red-bg);
+    color: var(--red);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clear-btn:hover {
+    opacity: 0.9;
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 768px) {
+
+    .actions {
+        grid-template-columns: 1fr;
+    }
+
+    .header-inner {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    main {
+        padding: 24px 16px 0;
+    }
+
+    .slot-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .slot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+    }
+}
